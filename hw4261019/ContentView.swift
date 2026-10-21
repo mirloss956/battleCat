@@ -1,11 +1,10 @@
 import SwiftUI
-import ImageIO
 
 // MARK: - 角色與型態資料
 
 struct CatForm {
     let name: String
-    let gifName: String          // 改：原本的 emoji 換成 GIF 檔名（不含 .gif）
+    let imageName: String        // PNG 圖片名稱（Assets 中的 Image Set 名稱）
     let description: String
     let attackDescription: String
 }
@@ -51,70 +50,69 @@ struct ContentView: View {
     }
 
     // 每隻貓咪在 Lv1、Lv10、Lv30 都有專屬的進化型態與名稱
-    // gifName 先暫用 cat1_lv1 這類名稱，之後可自行改成實際檔名
-    // （基本貓 Lv1 先沿用你現有的 animation.gif，方便立刻測試）
+    // imageName 為 Assets.xcassets 內的圖片名稱，先暫用 cat1_lv1 這類名稱，之後可自行改成實際名稱
     private let characters: [CatCharacter] = [
         CatCharacter(
             id: 0,
             lv1: CatForm(
-                name: "基本貓",
-                gifName: "animation",
-                description: "可以快速生產的基本角色",
-                attackDescription: "攻擊方式：近距離攻擊"
+                name: "貓咪",
+                imageName: "cat1_lv1",
+                description: "可以低成本生產的基本角色",
+                attackDescription: "攻擊方式：單體攻擊"
             ),
             lv10: CatForm(
-                name: "肌肉貓",
-                gifName: "cat1_lv10",
-                description: "鍛鍊出結實肌肉的進階貓咪",
-                attackDescription: "攻擊方式：強力近距離攻擊"
+                name: "健美貓",
+                imageName: "cat1_lv10",
+                description: "飽經鍛鍊的肌肉是魅力所在的\n基本角色",
+                attackDescription: "攻擊方式：單體攻擊"
             ),
             lv30: CatForm(
                 name: "摩西根貓",
-                gifName: "cat1_lv30",
-                description: "體格鍛鍊到極致並留著狂野龐克頭",
-                attackDescription: "攻擊方式：超破壞近距離攻擊"
+                imageName: "cat1_lv30",
+                description: "飽經鍛鍊的肌肉跟很MAN的髮型\n是魅力所在的基本角色",
+                attackDescription: "攻擊方式：單體攻擊"
             )
         ),
         CatCharacter(
             id: 1,
             lv1: CatForm(
                 name: "長腿貓",
-                gifName: "cat2_lv1",
-                description: "擁有較長攻擊距離的角色",
-                attackDescription: "攻擊方式：遠距離攻擊"
+                imageName: "cat2_lv1",
+                description: "可以攻擊遠處敵人的遠距離攻擊型角色\n只是單發的話攻擊力很高",
+                attackDescription: "攻擊方式：單體攻擊"
             ),
             lv10: CatForm(
                 name: "美腿貓",
-                gifName: "cat2_lv10",
-                description: "腿部線條更加修長的美腿角色",
-                attackDescription: "攻擊方式：廣範圍遠距離攻擊"
+                imageName: "cat2_lv10",
+                description: "對自己超美的腿感到驕傲的遠距離攻擊型角色\n只是單發的話攻擊力很高",
+                attackDescription: "攻擊方式：單體攻擊"
             ),
             lv30: CatForm(
-                name: "狂亂美腿貓",
-                gifName: "cat2_lv30",
-                description: "腿力超越常理的終極美腿貓",
-                attackDescription: "攻擊方式：超遠距離衝擊波"
+                name: "筋肉美腿貓",
+                imageName: "cat2_lv30",
+                description: "對自己健美的腿感到驕傲的遠距離攻擊型角色\n只是單發的話攻擊力很高\n善於攻擊異星戰士",
+                attackDescription: "攻擊方式：單體攻擊\n（善於攻擊）"
             )
         ),
         CatCharacter(
             id: 2,
             lv1: CatForm(
-                name: "牆貓",
-                gifName: "cat3_lv1",
-                description: "適合用來抵擋敵人的肉盾角色",
-                attackDescription: "攻擊方式：防禦與阻擋"
+                name: "坦克貓",
+                imageName: "cat3_lv1",
+                description: "體力很強的肉盾角色\n攻擊力跟弱雞差不多（範圍攻擊）",
+                attackDescription: "攻擊方式：範圍攻擊"
             ),
             lv10: CatForm(
-                name: "橡皮貓",
-                gifName: "cat3_lv10",
-                description: "如橡皮擦般方正堅固的防禦專家",
-                attackDescription: "攻擊方式：超高體力防禦阻擋"
+                name: "牆貓",
+                imageName: "cat3_lv10",
+                description: "用來當人牆最適合不過的肉盾角色\n攻擊力還是老樣子（範圍攻擊）",
+                attackDescription: "攻擊方式：範圍攻擊"
             ),
             lv30: CatForm(
-                name: "狂亂牆貓",
-                gifName: "cat3_lv30",
-                description: "化身為不可撼動的鋼鐵要塞",
-                attackDescription: "攻擊方式：絕對防禦力護盾"
+                name: "橡皮貓",
+                imageName: "cat3_lv30",
+                description: "用來當人牆最適合不過的肉盾角色\n利用橡膠的彈力更加強化\n攻擊力還是老樣子（範圍攻擊）",
+                attackDescription: "攻擊方式：範圍攻擊"
             )
         )
     ]
@@ -135,6 +133,8 @@ struct ContentView: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let isLandscape = geometry.size.width > geometry.size.height
+
             ZStack {
                 // 棕色遊戲外框
                 Color(red: 0.38, green: 0.19, blue: 0.09)
@@ -146,12 +146,12 @@ struct ContentView: View {
                         .frame(height: 28)
                         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
 
-                    gameArea
+                    gameArea(isLandscape: isLandscape)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .padding(.horizontal, max(36, geometry.size.width * 0.06))
-                .padding(.top, max(12, geometry.size.height * 0.035))
-                .padding(.bottom, max(16, geometry.size.height * 0.05))
+                .padding(.horizontal, isLandscape ? max(36, geometry.size.width * 0.06) : 16)
+                .padding(.top, isLandscape ? max(12, geometry.size.height * 0.035) : max(44, geometry.size.height * 0.05))
+                .padding(.bottom, isLandscape ? max(16, geometry.size.height * 0.05) : max(24, geometry.size.height * 0.04))
             }
             .ignoresSafeArea()
             .frame(
@@ -165,7 +165,7 @@ struct ContentView: View {
 
     // MARK: 遊戲主區域
 
-    private var gameArea: some View {
+    private func gameArea(isLandscape: Bool) -> some View {
         GeometryReader { geometry in
             ZStack {
                 // 藍綠色格線背景
@@ -193,16 +193,16 @@ struct ContentView: View {
                     // 角色展示與左右按鈕
                     HStack(spacing: 0) {
                         arrowButton(isLeft: true)
-                            .frame(width: geometry.size.width * 0.09)
+                            .frame(width: isLandscape ? geometry.size.width * 0.09 : 44)
 
                         Spacer(minLength: 0)
 
-                        characterDisplay
+                        characterDisplay(isLandscape: isLandscape)
 
                         Spacer(minLength: 0)
 
                         arrowButton(isLeft: false)
-                            .frame(width: geometry.size.width * 0.09)
+                            .frame(width: isLandscape ? geometry.size.width * 0.09 : 44)
                     }
                     .frame(maxHeight: .infinity)
 
@@ -213,8 +213,8 @@ struct ContentView: View {
                     // 角色說明面板（保持適當高度與底部留白，不與下方貼齊）
                     descriptionPanel
                         .frame(
-                            width: geometry.size.width * 0.58,
-                            height: max(58, geometry.size.height * 0.23)
+                            width: isLandscape ? geometry.size.width * 0.58 : geometry.size.width * 0.88,
+                            height: isLandscape ? max(75, geometry.size.height * 0.26) : 105
                         )
                         .padding(.bottom, 16)
                 }
@@ -261,21 +261,21 @@ struct ContentView: View {
 
     // MARK: 角色展示（掛載滑動手勢，避免與其他按鈕互相干擾）
 
-    private var characterDisplay: some View {
-        VStack(spacing: 4) {
+    private func characterDisplay(isLandscape: Bool) -> some View {
+        VStack(spacing: 0) {
             Spacer(minLength: 0)
 
-            // 改：Text(emoji) → GIFImage
-            GIFImage(name: currentForm.gifName)
-                .frame(width: 70, height: 70)
+            Image(currentForm.imageName)
+                .resizable()
+                .interpolation(.none)          // 像素風保持銳利，不需要可移除
+                .scaledToFit()
+                .frame(
+                    width: isLandscape ? 100 : 130,
+                    height: isLandscape ? 100 : 130
+                )
                 .shadow(color: .black.opacity(0.15), radius: 2)
                 .id("\(currentCat.id)-\(selectedCategory)")
                 .transition(.opacity.combined(with: .scale))
-
-            Text(currentForm.name)
-                .font(.system(size: 11, weight: .black))
-                .foregroundStyle(.white)
-                .shadow(color: .black, radius: 2)
 
             Spacer(minLength: 0)
         }
@@ -343,20 +343,20 @@ struct ContentView: View {
     // MARK: 黑色角色說明框
 
     private var descriptionPanel: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 3) {
             Text("【\(currentForm.name)】")
-                .font(.system(size: 13, weight: .black))
+                .font(.system(size: 12.5, weight: .black))
                 .foregroundStyle(.white)
 
             Text(currentForm.description)
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 10, weight: .semibold))
                 .foregroundStyle(.white)
-                .lineLimit(2)
+                .lineLimit(nil)
 
             Text(currentForm.attackDescription)
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 10, weight: .semibold))
                 .foregroundStyle(.white)
-                .lineLimit(2)
+                .lineLimit(nil)
 
             Spacer(minLength: 0)
         }
@@ -378,69 +378,6 @@ struct ContentView: View {
                 .stroke(Color.gray.opacity(0.8), lineWidth: 2)
         }
         .shadow(color: .black.opacity(0.3), radius: 2)
-    }
-}
-
-// MARK: - GIF 播放元件
-
-struct GIFImage: UIViewRepresentable {
-    let name: String
-
-    final class Coordinator {
-        var currentName: String?
-    }
-
-    func makeCoordinator() -> Coordinator { Coordinator() }
-
-    func makeUIView(context: Context) -> UIImageView {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        imageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        imageView.layer.magnificationFilter = .nearest   // 像素風保持銳利，不需要可移除
-        imageView.image = GIFLoader.image(named: name)
-        context.coordinator.currentName = name
-        return imageView
-    }
-
-    func updateUIView(_ uiView: UIImageView, context: Context) {
-        // 只有檔名改變才換圖，避免每次刷新畫面都讓動畫重頭播放
-        guard context.coordinator.currentName != name else { return }
-        uiView.image = GIFLoader.image(named: name)
-        context.coordinator.currentName = name
-    }
-}
-
-enum GIFLoader {
-    private static var cache: [String: UIImage] = [:]
-
-    static func image(named name: String) -> UIImage? {
-        if let cached = cache[name] { return cached }
-
-        guard
-            let url = Bundle.main.url(forResource: name, withExtension: "gif"),
-            let data = try? Data(contentsOf: url),
-            let source = CGImageSourceCreateWithData(data as CFData, nil)
-        else { return nil }
-
-        var frames: [UIImage] = []
-        var totalDuration: Double = 0
-
-        for i in 0..<CGImageSourceGetCount(source) {
-            guard let cg = CGImageSourceCreateImageAtIndex(source, i, nil) else { continue }
-            frames.append(UIImage(cgImage: cg))
-
-            let props = CGImageSourceCopyPropertiesAtIndex(source, i, nil) as? [CFString: Any]
-            let gif = props?[kCGImagePropertyGIFDictionary] as? [CFString: Any]
-            let delay = (gif?[kCGImagePropertyGIFUnclampedDelayTime] as? Double)
-                ?? (gif?[kCGImagePropertyGIFDelayTime] as? Double)
-                ?? 0.1
-            totalDuration += max(delay, 0.02)
-        }
-
-        let image = UIImage.animatedImage(with: frames, duration: totalDuration)
-        if let image { cache[name] = image }
-        return image
     }
 }
 
@@ -482,6 +419,10 @@ struct GridBackground: View {
     }
 }
 
-#Preview {
+#Preview("橫向", traits: .landscapeLeft) {
+    ContentView()
+}
+
+#Preview("直向") {
     ContentView()
 }
