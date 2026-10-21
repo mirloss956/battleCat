@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - 角色與型態資料
+// MARK: - 角色與形態資料
 
 struct CatForm {
     let name: String
@@ -49,7 +49,16 @@ struct ContentView: View {
         }
     }
 
-    // 每隻貓咪在 Lv1、Lv10、Lv30 都有專屬的進化型態與名稱
+    // 隨機切換角色，排除目前顯示的角色以避免重複。
+    func changeToRandomCat() {
+        let availablePages = characters.indices.filter { $0 != currentPage }
+
+        guard let randomPage = availablePages.randomElement() else { return }
+
+        changeCat(to: randomPage)
+    }
+
+    // 每隻貓咪在 Lv1、Lv10、Lv30 都有專屬的進化形態與名稱
     // imageName 為 Assets.xcassets 內的圖片名稱，先暫用 cat1_lv1 這類名稱，之後可自行改成實際名稱
     private let characters: [CatCharacter] = [
         CatCharacter(
@@ -63,7 +72,7 @@ struct ContentView: View {
             lv10: CatForm(
                 name: "健美貓",
                 imageName: "cat1_lv10",
-                description: "飽經鍛鍊的肌肉是魅力所在的\n基本角色",
+                description: "飽經鍛鍊的肌肉是魅力所在的基本角色",
                 attackDescription: "攻擊方式：單體攻擊"
             ),
             lv30: CatForm(
@@ -206,9 +215,12 @@ struct ContentView: View {
                     }
                     .frame(maxHeight: .infinity)
 
-                    // Page Control
-                    pageControl
-                        .padding(.bottom, 4)
+                    // Page Control 與隨機切換按鈕
+                    HStack(spacing: 14) {
+                        pageControl
+                        randomButton
+                    }
+                    .padding(.bottom, 4)
 
                     // 角色說明面板（保持適當高度與底部留白，不與下方貼齊）
                     descriptionPanel
@@ -320,7 +332,11 @@ struct ContentView: View {
         HStack(spacing: 7) {
             ForEach(characters.indices, id: \.self) { index in
                 Button {
-                    changeCat(to: index)
+                    if index < currentPage {
+                        changeCat(to: currentPage - 1)
+                    } else if index > currentPage {
+                        changeCat(to: currentPage + 1)
+                    }
                 } label: {
                     Circle()
                         .fill(
@@ -333,11 +349,28 @@ struct ContentView: View {
                             Circle()
                                 .stroke(.black.opacity(0.6), lineWidth: 1)
                         }
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("第 \(index + 1) 頁")
             }
         }
+    }
+
+    private var randomButton: some View {
+        Button {
+            changeToRandomCat()
+        } label: {
+            Label("隨機", systemImage: "shuffle")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(.black)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Color.yellow)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("隨機顯示另一隻貓咪")
     }
 
     // MARK: 黑色角色說明框
